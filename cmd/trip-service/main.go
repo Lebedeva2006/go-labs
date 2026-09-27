@@ -11,6 +11,7 @@ import (
  "github.com/go-chi/chi/v5"
 
  "github.com/Lebedeva2006/go-labs/internal/config"
+ "github.com/Lebedeva2006/go-labs/internal/db"
 )
 
 func main() {
@@ -19,6 +20,14 @@ func main() {
   log.Fatalf("failed to load config: %v", err)
  }
 
+ startupCtx := context.Background()
+
+ pool, err := db.NewPool(startupCtx, cfg)
+ if err != nil {
+  log.Fatalf("failed to connect to database: %v", err)
+ }
+ defer pool.Close()
+
  router := chi.NewRouter()
 
  router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -26,6 +35,21 @@ func main() {
   w.WriteHeader(http.StatusOK)
   w.Write([]byte(`{"status":"ok"}`))
  })
+
+ router.Get("/ready", func(w http.ResponseWriter, r *http.Request) {
+  w.Header().Set("Content-Type", "application/json")
+
+  if err := db.Ping(r.Context(), pool, cfg.DatabaseQueryTimeout); err != nil {
+   log.Printf("readiness check failed: %v", err)
+   w.WriteHeader(http.StatusServiceUnavailable)
+   w.Write([]byte(`{"status":"unavailable"}`))
+   return
+  }
+
+  w.WriteHeader(http.StatusOK)
+  w.Write([]byte(`{"status":"ok"}`))
+ })
+
 
  server := &http.Server{
   Addr:              cfg.HTTPAddr,
