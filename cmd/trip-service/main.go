@@ -1,8 +1,11 @@
 package main
 
 import (
+ "context"
  "log"
  "net/http"
+ "os/signal"
+ "syscall"
  "time"
 
  "github.com/go-chi/chi/v5"
@@ -33,8 +36,33 @@ func main() {
   IdleTimeout:       60 * time.Second,
  }
 
- log.Printf("starting server on %s", cfg.HTTPAddr)
- if err := server.ListenAndServe(); err != nil {
+ ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+ defer stop()
+
+ serverErrors := make(chan error, 1)
+ go func() {
+  log.Printf("starting server on %s", cfg.HTTPAddr)
+  if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+   serverErrors <- err
+  }
+ }()
+
+ select {
+ case err := <-serverErrors:
   log.Fatalf("server failed: %v", err)
+ case <-ctx.Done():
+  log.Println("shutdown signal received")
+
+  shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
+  defer cancel()
+
+  if err := server.Shutdown(shutdownCtx); err != nil {
+   log.Printf("graceful shutdown failed: %v", err)
+   if closeErr := server.Close(); closeErr != nil {
+    log.Printf("forced close failed: %v", closeErr)
+   }
+  } else {
+   log.Println("server stopped gracefully")
+  }
  }
 }
