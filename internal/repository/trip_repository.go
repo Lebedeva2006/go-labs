@@ -69,7 +69,7 @@ func (r *TripRepository) GetByID(ctx context.Context, id string) (domain.Trip, e
    "id", "user_id", "driver_id",
    "start_latitude", "start_longitude",
    "end_latitude", "end_longitude",
-   "price", "status", "started_at", "finished_at", "last_position_at",
+   "price", "status", "started_at", "finished_at",
   ).
   From("trips").
   Where(sq.Eq{"id": id}).
@@ -85,7 +85,7 @@ func (r *TripRepository) GetByID(ctx context.Context, id string) (domain.Trip, e
   &trip.ID, &trip.UserID, &trip.DriverID,
   &trip.StartPoint.Latitude, &trip.StartPoint.Longitude,
   &trip.EndPoint.Latitude, &trip.EndPoint.Longitude,
-  &trip.Price, &trip.Status, &trip.StartedAt, &trip.FinishedAt, &trip.LastPositionAt,
+  &trip.Price, &trip.Status, &trip.StartedAt, &trip.FinishedAt,
  )
  if err != nil {
   if errors.Is(err, pgx.ErrNoRows) {
