@@ -47,13 +47,15 @@ func (s *Server) Ready(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) CreateTrip(w http.ResponseWriter, r *http.Request, params api.CreateTripParams) {
  var body api.TripData
- if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-  writeProblem(w, r, http.StatusBadRequest, "invalid_request", "Invalid request", "Malformed JSON body")
+ decoder := json.NewDecoder(r.Body)
+ decoder.DisallowUnknownFields()
+ if err := decoder.Decode(&body); err != nil {
+  writeProblem(w, r, http.StatusBadRequest, "invalid_request", "Invalid request", "Malformed JSON body or unknown fields")
   return
  }
 
- if body.Price < 0 {
-  writeProblem(w, r, http.StatusBadRequest, "invalid_request", "Invalid request", "Price must not be negative")
+ if msg := validateTripData(body); msg != "" {
+  writeProblem(w, r, http.StatusBadRequest, "invalid_request", "Invalid request", msg)
   return
  }
 
