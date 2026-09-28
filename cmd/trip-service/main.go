@@ -12,6 +12,9 @@ import (
 
  "github.com/Lebedeva2006/go-labs/internal/config"
  "github.com/Lebedeva2006/go-labs/internal/db"
+ api "github.com/Lebedeva2006/go-labs/internal/generated"
+ "github.com/Lebedeva2006/go-labs/internal/handler"
+ "github.com/Lebedeva2006/go-labs/internal/repository"
 )
 
 func main() {
@@ -27,33 +30,24 @@ func main() {
   log.Fatalf("failed to connect to database: %v", err)
  }
  defer pool.Close()
+ txManager := db.NewTxManager(pool)
+ tripRepo := repository.NewTripRepository(pool)
+ historyRepo := repository.NewTripStatusHistoryRepository(pool)
+
+ server := &handler.Server{
+  Pool:         db.PoolPinger{Pool: pool},
+  TxManager:    txManager,
+  TripRepo:     tripRepo,
+  HistoryRepo:  historyRepo,
+  QueryTimeout: cfg.DatabaseQueryTimeout,
+ }
 
  router := chi.NewRouter()
+ apiHandler := api.HandlerFromMux(server, router)
 
- router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-  w.Header().Set("Content-Type", "application/json")
-  w.WriteHeader(http.StatusOK)
-  w.Write([]byte(`{"status":"ok"}`))
- })
-
- router.Get("/ready", func(w http.ResponseWriter, r *http.Request) {
-  w.Header().Set("Content-Type", "application/json")
-
-  if err := db.Ping(r.Context(), pool, cfg.DatabaseQueryTimeout); err != nil {
-   log.Printf("readiness check failed: %v", err)
-   w.WriteHeader(http.StatusServiceUnavailable)
-   w.Write([]byte(`{"status":"unavailable"}`))
-   return
-  }
-
-  w.WriteHeader(http.StatusOK)
-  w.Write([]byte(`{"status":"ok"}`))
- })
-
-
- server := &http.Server{
+ httpServer := &http.Server{
   Addr:              cfg.HTTPAddr,
-  Handler:           router,
+  Handler:           apiHandler,
   ReadTimeout:       5 * time.Second,
   ReadHeaderTimeout: 5 * time.Second,
   WriteTimeout:      10 * time.Second,
@@ -66,7 +60,7 @@ func main() {
  serverErrors := make(chan error, 1)
  go func() {
   log.Printf("starting server on %s", cfg.HTTPAddr)
-  if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+  if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
    serverErrors <- err
   }
  }()
@@ -80,9 +74,9 @@ func main() {
   shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
   defer cancel()
 
-  if err := server.Shutdown(shutdownCtx); err != nil {
+  if err := httpServer.Shutdown(shutdownCtx); err != nil {
    log.Printf("graceful shutdown failed: %v", err)
-   if closeErr := server.Close(); closeErr != nil {
+   if closeErr := httpServer.Close(); closeErr != nil {
     log.Printf("forced close failed: %v", closeErr)
    }
   } else {
