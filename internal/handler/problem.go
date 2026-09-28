@@ -2,6 +2,7 @@ package handler
 
 import (
  "encoding/json"
+ "log"
  "net/http"
 
  "github.com/Lebedeva2006/go-labs/internal/domain"
@@ -38,6 +39,7 @@ func writeDomainError(w http.ResponseWriter, r *http.Request, err error) {
  case err == domain.ErrDriverBusy:
   writeProblem(w, r, http.StatusConflict, "driver_busy", "Driver busy", "Driver already has an active trip")
  default:
+  log.Printf("internal error: %v", err)
   writeProblem(w, r, http.StatusInternalServerError, "internal_error", "Internal Server Error", "Internal server error")
  }
 }
