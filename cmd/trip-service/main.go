@@ -31,8 +31,9 @@ func main() {
  }
  defer pool.Close()
  txManager := db.NewTxManager(pool)
- tripRepo := repository.NewTripRepository(pool)
- historyRepo := repository.NewTripStatusHistoryRepository(pool)
+ tripRepo := repository.NewTripRepository(pool, cfg.DatabaseQueryTimeout)
+ historyRepo := repository.NewTripStatusHistoryRepository(pool, cfg.DatabaseQueryTimeout)
+
 
  server := &handler.Server{
   Pool:         db.PoolPinger{Pool: pool},
@@ -43,7 +44,13 @@ func main() {
  }
 
  router := chi.NewRouter()
- apiHandler := api.HandlerFromMux(server, router)
+ apiHandler := api.HandlerWithOptions(server, api.ChiServerOptions{
+  BaseRouter: router,
+  ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+   handler.WriteBadRequest(w, r, err.Error())
+  },
+ })
+
 
  httpServer := &http.Server{
   Addr:              cfg.HTTPAddr,

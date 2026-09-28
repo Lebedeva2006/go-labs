@@ -43,3 +43,7 @@ func writeDomainError(w http.ResponseWriter, r *http.Request, err error) {
   writeProblem(w, r, http.StatusInternalServerError, "internal_error", "Internal Server Error", "Internal server error")
  }
 }
+
+func WriteBadRequest(w http.ResponseWriter, r *http.Request, detail string) {
+ writeProblem(w, r, http.StatusBadRequest, "invalid_request", "Invalid request", detail)
+}

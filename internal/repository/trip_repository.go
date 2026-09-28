@@ -4,6 +4,7 @@ import (
  "context"
  "errors"
  "fmt"
+ "time"
 
  sq "github.com/Masterminds/squirrel"
  "github.com/jackc/pgx/v5"
@@ -19,14 +20,18 @@ const uniqueViolationCode = "23505"
 
 type TripRepository struct {
  pool *pgxpool.Pool
+ queryTimeout time.Duration
 }
 
-func NewTripRepository(pool *pgxpool.Pool) *TripRepository {
- return &TripRepository{pool: pool}
+func NewTripRepository(pool *pgxpool.Pool, queryTimeout time.Duration) *TripRepository {
+ return &TripRepository{pool: pool, queryTimeout: queryTimeout}
 }
 
 
 func (r *TripRepository) Create(ctx context.Context, trip domain.Trip) error {
+ ctx, cancel := context.WithTimeout(ctx, r.queryTimeout)
+ defer cancel()
+
  exec := db.ExecutorFromContext(ctx, r.pool)
 
  query, args, err := sq.
@@ -62,6 +67,9 @@ func (r *TripRepository) Create(ctx context.Context, trip domain.Trip) error {
 
 
 func (r *TripRepository) GetByID(ctx context.Context, id string) (domain.Trip, error) {
+ ctx, cancel := context.WithTimeout(ctx, r.queryTimeout)
+ defer cancel()
+
  exec := db.ExecutorFromContext(ctx, r.pool)
 
  query, args, err := sq.
@@ -99,6 +107,9 @@ func (r *TripRepository) GetByID(ctx context.Context, id string) (domain.Trip, e
 
 
 func (r *TripRepository) Finish(ctx context.Context, id string, finishedAt interface{}) error {
+ ctx, cancel := context.WithTimeout(ctx, r.queryTimeout)
+ defer cancel()
+
  exec := db.ExecutorFromContext(ctx, r.pool)
 
  query, args, err := sq.

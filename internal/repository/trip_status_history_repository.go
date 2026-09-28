@@ -3,6 +3,7 @@ package repository
 import (
  "context"
  "fmt"
+ "time"
 
  sq "github.com/Masterminds/squirrel"
  "github.com/jackc/pgx/v5/pgxpool"
@@ -14,14 +15,18 @@ import (
 
 type TripStatusHistoryRepository struct {
  pool *pgxpool.Pool
+ queryTimeout time.Duration
 }
 
-func NewTripStatusHistoryRepository(pool *pgxpool.Pool) *TripStatusHistoryRepository {
- return &TripStatusHistoryRepository{pool: pool}
+func NewTripStatusHistoryRepository(pool *pgxpool.Pool, queryTimeout time.Duration) *TripStatusHistoryRepository {
+ return &TripStatusHistoryRepository{pool: pool, queryTimeout: queryTimeout}
 }
 
 
 func (r *TripStatusHistoryRepository) Create(ctx context.Context, tripID string, fromStatus *domain.TripStatus, toStatus domain.TripStatus, reason string) error {
+ ctx, cancel := context.WithTimeout(ctx, r.queryTimeout)
+ defer cancel()
+
  exec := db.ExecutorFromContext(ctx, r.pool)
 
  query, args, err := sq.
