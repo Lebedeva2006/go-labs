@@ -1,16 +1,16 @@
 package db
 
 import (
- "context"
- "time"
+	"context"
+	"time"
 
- "github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type PoolPinger struct {
- Pool *pgxpool.Pool
+	Pool *pgxpool.Pool
 }
 
 func (p PoolPinger) Ping(ctx context.Context, timeout time.Duration) error {
- return Ping(ctx, p.Pool, timeout)
+	return Ping(ctx, p.Pool, timeout)
 }
