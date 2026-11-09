@@ -5,7 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Lebedeva2006/go-labs/internal/domain"
+	domain "github.com/Lebedeva2006/go-labs/internal/domain/trip"
+	
 )
 
 type problem struct {

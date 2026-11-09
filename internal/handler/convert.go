@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/Lebedeva2006/go-labs/internal/domain"
-	api "github.com/Lebedeva2006/go-labs/internal/generated"
+    domain "github.com/Lebedeva2006/go-labs/internal/domain/trip"
+    api    "github.com/Lebedeva2006/go-labs/internal/generated"
 )
 
 func toDomainCoordinates(c api.Coordinates) domain.Coordinates {

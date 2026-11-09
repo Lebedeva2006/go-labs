@@ -9,15 +9,15 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/Lebedeva2006/go-labs/internal/db"
-	"github.com/Lebedeva2006/go-labs/internal/domain"
+	"github.com/Lebedeva2006/go-labs/internal/infra/postgres/transaction"
+	domain "github.com/Lebedeva2006/go-labs/internal/domain/trip"
 	api "github.com/Lebedeva2006/go-labs/internal/generated"
-	"github.com/Lebedeva2006/go-labs/internal/repository"
+	repository "github.com/Lebedeva2006/go-labs/internal/repository/trip"
 )
 
 type Server struct {
 	Pool         PingPool
-	TxManager    db.TxManager
+	TxManager    transaction.TxManager
 	TripRepo     *repository.TripRepository
 	HistoryRepo  *repository.TripStatusHistoryRepository
 	QueryTimeout time.Duration

@@ -11,10 +11,11 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/Lebedeva2006/go-labs/internal/config"
-	"github.com/Lebedeva2006/go-labs/internal/db"
+	"github.com/Lebedeva2006/go-labs/internal/infra/postgres"
 	api "github.com/Lebedeva2006/go-labs/internal/generated"
 	"github.com/Lebedeva2006/go-labs/internal/handler"
-	"github.com/Lebedeva2006/go-labs/internal/repository"
+"github.com/Lebedeva2006/go-labs/internal/infra/postgres/transaction"
+	repository "github.com/Lebedeva2006/go-labs/internal/repository/trip"
 )
 
 func main() {
@@ -25,17 +26,17 @@ func main() {
 
 	startupCtx := context.Background()
 
-	pool, err := db.NewPool(startupCtx, cfg)
+	pool, err := postgres.NewPool(startupCtx, cfg)
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
 	defer pool.Close()
-	txManager := db.NewTxManager(pool)
+	txManager := transaction.NewTxManager(pool)
 	tripRepo := repository.NewTripRepository(pool, cfg.DatabaseQueryTimeout)
 	historyRepo := repository.NewTripStatusHistoryRepository(pool, cfg.DatabaseQueryTimeout)
 
 	server := &handler.Server{
-		Pool:         db.PoolPinger{Pool: pool},
+		Pool:         postgres.PoolPinger{Pool: pool},
 		TxManager:    txManager,
 		TripRepo:     tripRepo,
 		HistoryRepo:  historyRepo,

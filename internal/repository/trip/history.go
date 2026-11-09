@@ -1,4 +1,4 @@
-package repository
+package trip
 
 import (
 	"context"
@@ -8,8 +8,8 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/Lebedeva2006/go-labs/internal/db"
-	"github.com/Lebedeva2006/go-labs/internal/domain"
+	"github.com/Lebedeva2006/go-labs/internal/infra/postgres/transaction"
+	domain "github.com/Lebedeva2006/go-labs/internal/domain/trip"
 )
 
 type TripStatusHistoryRepository struct {
@@ -25,7 +25,7 @@ func (r *TripStatusHistoryRepository) Create(ctx context.Context, tripID string,
 	ctx, cancel := context.WithTimeout(ctx, r.queryTimeout)
 	defer cancel()
 
-	exec := db.ExecutorFromContext(ctx, r.pool)
+	exec := transaction.ExecutorFromContext(ctx, r.pool)
 
 	query, args, err := sq.
 		Insert("trip_status_history").

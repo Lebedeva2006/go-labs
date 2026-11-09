@@ -1,4 +1,4 @@
-package repository
+package trip
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/Lebedeva2006/go-labs/internal/db"
-	"github.com/Lebedeva2006/go-labs/internal/domain"
+	"github.com/Lebedeva2006/go-labs/internal/infra/postgres/transaction"
+	domain "github.com/Lebedeva2006/go-labs/internal/domain/trip"
 )
 
 const uniqueViolationCode = "23505"
@@ -30,7 +30,7 @@ func (r *TripRepository) Create(ctx context.Context, trip domain.Trip) error {
 	ctx, cancel := context.WithTimeout(ctx, r.queryTimeout)
 	defer cancel()
 
-	exec := db.ExecutorFromContext(ctx, r.pool)
+	exec := transaction.ExecutorFromContext(ctx, r.pool)
 
 	query, args, err := sq.
 		Insert("trips").
@@ -67,7 +67,7 @@ func (r *TripRepository) GetByID(ctx context.Context, id string) (domain.Trip, e
 	ctx, cancel := context.WithTimeout(ctx, r.queryTimeout)
 	defer cancel()
 
-	exec := db.ExecutorFromContext(ctx, r.pool)
+	exec := transaction.ExecutorFromContext(ctx, r.pool)
 
 	query, args, err := sq.
 		Select(
@@ -106,7 +106,7 @@ func (r *TripRepository) Finish(ctx context.Context, id string, finishedAt inter
 	ctx, cancel := context.WithTimeout(ctx, r.queryTimeout)
 	defer cancel()
 
-	exec := db.ExecutorFromContext(ctx, r.pool)
+	exec := transaction.ExecutorFromContext(ctx, r.pool)
 
 	query, args, err := sq.
 		Update("trips").
