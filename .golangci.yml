@@ -69,6 +69,16 @@ linters:
               desc: usecase работает через интерфейсы, а не через драйвер бд
             - pkg: github.com/Masterminds/squirrel
               desc: usecase не строит SQL
+            - pkg: github.com/Lebedeva2006/go-labs/internal/generated
+              desc: usecase не знает про сгенерированный API
+        http:
+          files:
+            - "**/internal/http/**"
+          deny:
+            - pkg: github.com/Lebedeva2006/go-labs/internal/repository
+              desc: транспорт не знает про репозитории
+            - pkg: github.com/Lebedeva2006/go-labs/internal/infra
+              desc: транспорт не знает про инфраструктуру
 
     # Запрещает обращения через идентификатор с подчёркиванием, поэтому пакеты
     # называем без snake_case: internal/adapter/http, а не internal/adapter/http_server.
