@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/exaring/otelpgx"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Lebedeva2006/go-labs/internal/config"
@@ -22,6 +23,8 @@ func NewPool(ctx context.Context, cfg config.Config) (*pgxpool.Pool, error) {
 
 	connectCtx, cancel := context.WithTimeout(ctx, cfg.DatabaseConnectTimeout)
 	defer cancel()
+
+	poolConfig.ConnConfig.Tracer = otelpgx.NewTracer()
 
 	pool, err := pgxpool.NewWithConfig(connectCtx, poolConfig)
 	if err != nil {

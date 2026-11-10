@@ -43,14 +43,16 @@ func TestExecute(t *testing.T) {
 			trips := NewMocktripRepository(ctrl)
 			hist := NewMockhistoryRepository(ctrl)
 			tx := NewMocktxManager(ctrl)
+			m := NewMockmetrics(ctrl)
 			if tt.useRepo {
 				tx.EXPECT().Do(gomock.Any(), gomock.Any()).DoAndReturn(runTx)
+				m.EXPECT().TripCreated(gomock.Any()).Return().AnyTimes()
 				trips.EXPECT().Create(gomock.Any(), gomock.Any()).Return(tt.repoErr)
 				if tt.repoErr == nil {
 					hist.EXPECT().Create(gomock.Any(), gomock.Any(), nil, domain.TripStatusActive, gomock.Any()).Return(nil)
 				}
 			}
-			_, err := create.New(trips, hist, tx).Execute(context.Background(), tt.in())
+			_, err := create.New(trips, hist, tx, m).Execute(context.Background(), tt.in())
 			if tt.name == "invalid input" {
 				var ve *domain.ValidationError
 				if !errors.As(err, &ve) {

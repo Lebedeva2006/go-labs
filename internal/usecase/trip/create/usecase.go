@@ -14,10 +14,11 @@ type Usecase struct {
 	trips   tripRepository
 	history historyRepository
 	tx      txManager
+	m       metrics
 }
 
-func New(trips tripRepository, history historyRepository, tx txManager) *Usecase {
-	return &Usecase{trips: trips, history: history, tx: tx}
+func New(trips tripRepository, history historyRepository, tx txManager, m metrics) *Usecase {
+	return &Usecase{trips: trips, history: history, tx: tx, m: m}
 }
 
 func (u *Usecase) Execute(ctx context.Context, in model.CreateTripInput) (domain.Trip, error) {
@@ -38,5 +39,6 @@ func (u *Usecase) Execute(ctx context.Context, in model.CreateTripInput) (domain
 	if err != nil {
 		return domain.Trip{}, err
 	}
+	u.m.TripCreated(ctx)
 	return trip, nil
 }

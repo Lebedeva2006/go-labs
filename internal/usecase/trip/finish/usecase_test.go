@@ -37,6 +37,9 @@ func TestExecute(t *testing.T) {
 			trips := NewMocktripRepository(ctrl)
 			hist := NewMockhistoryRepository(ctrl)
 			tx := NewMocktxManager(ctrl)
+			m := NewMockmetrics(ctrl)
+
+			m.EXPECT().TripCompleted(gomock.Any()).Return().AnyTimes()
 
 			tx.EXPECT().Do(gomock.Any(), gomock.Any()).DoAndReturn(runTx)
 
@@ -55,7 +58,7 @@ func TestExecute(t *testing.T) {
 				}
 			}
 
-			uc := finish.New(trips, hist, tx)
+			uc := finish.New(trips, hist, tx, m)
 			_, err := uc.Execute(context.Background(), id)
 
 			if tt.name == "success" {
