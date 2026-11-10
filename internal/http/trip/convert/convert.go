@@ -1,8 +1,8 @@
 package convert
 
 import (
-    domain "github.com/Lebedeva2006/go-labs/internal/domain/trip"
-    api    "github.com/Lebedeva2006/go-labs/internal/generated"
+	domain "github.com/Lebedeva2006/go-labs/internal/domain/trip"
+	api "github.com/Lebedeva2006/go-labs/internal/generated"
 )
 
 func ToDomainCoordinates(c api.Coordinates) domain.Coordinates {

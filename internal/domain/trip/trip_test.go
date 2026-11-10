@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -43,7 +44,7 @@ func TestTrip_Finish(t *testing.T) {
 func TestCoordinates_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
-		coords Coordinates
+		coords  Coordinates
 		wantErr bool
 	}{
 		{"valid coordinates", Coordinates{Latitude: 40.7128, Longitude: -74.0060}, false},
@@ -83,7 +84,7 @@ func validTrip() Trip {
 func TestTrip_Validate(t *testing.T) {
 	tests := []struct {
 		name      string
-		mutate    func(*Trip) 
+		mutate    func(*Trip)
 		wantField string
 	}{
 		{"valid trip", func(tr *Trip) {}, ""},
@@ -119,4 +120,3 @@ func TestTrip_Validate(t *testing.T) {
 		})
 	}
 }
-

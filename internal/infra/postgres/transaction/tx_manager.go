@@ -24,7 +24,6 @@ func NewTxManager(pool *pgxpool.Pool) TxManager {
 
 func (m *pgxTxManager) Do(ctx context.Context, fn func(ctx context.Context) error) error {
 	if _, ok := ctx.Value(txKey{}).(pgx.Tx); ok {
-
 		return fn(ctx)
 	}
 

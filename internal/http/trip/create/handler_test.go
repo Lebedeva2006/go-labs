@@ -48,7 +48,7 @@ func TestCreateHandler(t *testing.T) {
 		},
 		{
 			name: "malformed JSON",
-			body: `{"user_id": "broken`, 
+			body: `{"user_id": "broken`,
 			mockSetup: func(m *Mockusecase) {
 			},
 			wantStatus: http.StatusBadRequest,

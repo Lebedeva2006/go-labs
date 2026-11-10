@@ -1,4 +1,4 @@
-.PHONY: migrate run generate build test lint
+.PHONY: migrate migrate-down run generate build test test-integration lint fmt
 
 migrate:
 	go tool goose -dir migrations postgres "$$DATABASE_URL" up
@@ -20,5 +20,14 @@ generate:
 build:
 	go build -o bin/service ./cmd/service
 
+lint:
+	go tool golangci-lint run ./...
+
+fmt:
+	go tool golangci-lint fmt ./...
+
 test:
-	go test -race ./...
+	go test -race -cover ./...
+
+test-integration:
+	go test -race -tags=integration ./...

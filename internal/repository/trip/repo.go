@@ -11,8 +11,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/Lebedeva2006/go-labs/internal/infra/postgres/transaction"
 	domain "github.com/Lebedeva2006/go-labs/internal/domain/trip"
+	"github.com/Lebedeva2006/go-labs/internal/infra/postgres/transaction"
 )
 
 const uniqueViolationCode = "23505"

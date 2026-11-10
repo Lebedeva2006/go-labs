@@ -42,7 +42,8 @@ func main() {
 
 	select {
 	case err := <-errs:
-		log.Fatalf("server failed: %v", err)
+		log.Printf("server failed: %v", err)
+		return
 	case <-ctx.Done():
 		sctx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
 		defer cancel()

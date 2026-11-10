@@ -12,9 +12,15 @@ import (
 )
 
 type (
-	Handler       interface{ Handle(http.ResponseWriter, *http.Request) }
-	IDHandler     interface{ Handle(http.ResponseWriter, *http.Request, uuid.UUID) }
-	PingPool      interface{ Ping(ctx context.Context, timeout time.Duration) error }
+	Handler interface {
+		Handle(http.ResponseWriter, *http.Request)
+	}
+	IDHandler interface {
+		Handle(http.ResponseWriter, *http.Request, uuid.UUID)
+	}
+	PingPool interface {
+		Ping(ctx context.Context, timeout time.Duration) error
+	}
 )
 
 type Server struct {
@@ -29,7 +35,11 @@ type Server struct {
 func (s *Server) CreateTrip(w http.ResponseWriter, r *http.Request, _ api.CreateTripParams) {
 	s.Create.Handle(w, r)
 }
-func (s *Server) GetTrip(w http.ResponseWriter, r *http.Request, id api.TripId) { s.Get.Handle(w, r, id) }
+
+func (s *Server) GetTrip(w http.ResponseWriter, r *http.Request, id api.TripId) {
+	s.Get.Handle(w, r, id)
+}
+
 func (s *Server) FinishTrip(w http.ResponseWriter, r *http.Request, id api.TripId) {
 	s.Finish.Handle(w, r, id)
 }

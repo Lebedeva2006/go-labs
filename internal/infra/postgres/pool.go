@@ -16,8 +16,8 @@ func NewPool(ctx context.Context, cfg config.Config) (*pgxpool.Pool, error) {
 		return nil, fmt.Errorf("db: failed to parse database url: %w", err)
 	}
 
-	poolConfig.MaxConns = int32(cfg.DatabaseMaxConns)
-	poolConfig.MinConns = int32(cfg.DatabaseMinConns)
+	poolConfig.MaxConns = int32(cfg.DatabaseMaxConns) //nolint:gosec // конфиг не превышает int32
+	poolConfig.MinConns = int32(cfg.DatabaseMinConns) //nolint:gosec // конфиг не превышает int32
 	poolConfig.MaxConnLifetime = cfg.DatabaseMaxConnLifetime
 
 	connectCtx, cancel := context.WithTimeout(ctx, cfg.DatabaseConnectTimeout)

@@ -12,11 +12,13 @@ import (
 	"github.com/Lebedeva2006/go-labs/internal/usecase/trip/finish"
 )
 
+const testSuccess = "success"
+
 func runTx(_ context.Context, fn func(context.Context) error) error { return fn(context.Background()) }
 
 func TestExecute(t *testing.T) {
 	id := uuid.New()
-	
+
 	activeTrip := domain.Trip{ID: id, Status: domain.TripStatusActive}
 	completedTrip := domain.Trip{ID: id, Status: domain.TripStatusCompleted}
 
@@ -24,7 +26,7 @@ func TestExecute(t *testing.T) {
 		name    string
 		repoErr error
 	}{
-		{"success", nil},
+		{testSuccess, nil},
 		{"already completed", domain.ErrTripCompleted},
 		{"not found", domain.ErrTripNotFound},
 	}
@@ -38,7 +40,7 @@ func TestExecute(t *testing.T) {
 
 			tx.EXPECT().Do(gomock.Any(), gomock.Any()).DoAndReturn(runTx)
 
-			if tt.name == "success" {
+			if tt.name == testSuccess {
 				gomock.InOrder(
 					trips.EXPECT().GetByID(gomock.Any(), id.String()).Return(activeTrip, nil),
 					trips.EXPECT().Finish(gomock.Any(), id.String(), gomock.Any()).Return(nil),

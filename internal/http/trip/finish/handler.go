@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+
 	"github.com/Lebedeva2006/go-labs/internal/http/response"
 	"github.com/Lebedeva2006/go-labs/internal/http/trip/convert"
 )

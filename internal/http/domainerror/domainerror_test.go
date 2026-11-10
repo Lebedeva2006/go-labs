@@ -64,7 +64,7 @@ func TestProblem(t *testing.T) {
 			if problem.Code != tt.wantCode {
 				t.Errorf("code = %q, want %q", problem.Code, tt.wantCode)
 			}
-			
+
 			if tt.wantStatus == http.StatusInternalServerError {
 				if problem.Detail != nil && *problem.Detail == tt.err.Error() {
 					t.Errorf("internal error details leaked to response")

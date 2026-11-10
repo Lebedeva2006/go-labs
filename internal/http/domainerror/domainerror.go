@@ -28,7 +28,7 @@ func build(status int, code, title, detail string) (int, api.Problem) {
 	return status, api.Problem{
 		Type:   "https://tripgo.example/problems/" + code,
 		Title:  title,
-		Status: int32(status),
+		Status: int32(status), //nolint:gosec // HTTP-статусы всегда в пределах int32
 		Detail: &detail,
 		Code:   code,
 	}

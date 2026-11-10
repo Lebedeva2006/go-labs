@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/Lebedeva2006/go-labs/internal/http/domainerror"
 	trip "github.com/Lebedeva2006/go-labs/internal/domain/trip"
+	"github.com/Lebedeva2006/go-labs/internal/http/domainerror"
 )
 
 func JSON(w http.ResponseWriter, status int, body any) {

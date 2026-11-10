@@ -10,11 +10,11 @@ import (
 
 	"github.com/Lebedeva2006/go-labs/internal/config"
 	api "github.com/Lebedeva2006/go-labs/internal/generated"
+	"github.com/Lebedeva2006/go-labs/internal/http/response"
+	"github.com/Lebedeva2006/go-labs/internal/http/server"
 	createh "github.com/Lebedeva2006/go-labs/internal/http/trip/create"
 	finishh "github.com/Lebedeva2006/go-labs/internal/http/trip/finish"
 	geth "github.com/Lebedeva2006/go-labs/internal/http/trip/get"
-	"github.com/Lebedeva2006/go-labs/internal/http/response"
-	"github.com/Lebedeva2006/go-labs/internal/http/server"
 	"github.com/Lebedeva2006/go-labs/internal/infra/postgres"
 	"github.com/Lebedeva2006/go-labs/internal/infra/postgres/transaction"
 	repository "github.com/Lebedeva2006/go-labs/internal/repository/trip"

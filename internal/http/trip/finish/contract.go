@@ -3,7 +3,9 @@ package finish
 
 import (
 	"context"
+
 	"github.com/google/uuid"
+
 	domain "github.com/Lebedeva2006/go-labs/internal/domain/trip"
 )
 
